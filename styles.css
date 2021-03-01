@@ -25,8 +25,26 @@ body, .quote-input {
 
 .timer {
     position: absolute;
-    top: 2rem;
+    top: 4rem;
     font-size: 3rem;
+    color: #F0DB4F;
+    font-weight: bold;
+}
+
+.health {
+    position: absolute;
+    left: 2rem;
+    top: 2rem;
+    font-size: 1rem;
+    color: #F0DB4F;
+    font-weight: bold;
+}
+
+.score {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 1rem;
     color: #F0DB4F;
     font-weight: bold;
 }
