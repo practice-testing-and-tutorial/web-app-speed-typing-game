@@ -3,8 +3,12 @@ const quoteDisplayElement = document.getElementById('quoteDisplay');
 const quoteInputElement = document.getElementById('quoteInput');
 const quoteAuthorElement = document.getElementById('quoteAuthor');
 const timerElement = document.getElementById('timer');
+const healthElement = document.getElementById('health');
+const scoreElement = document.getElementById('score');
 let timeOut = true;
 let timeLimit = 0;
+let health = 3;
+let score = 0;
 
 quoteInputElement.addEventListener('input', () => {
     const arrayQuote = quoteDisplayElement.querySelectorAll('span');
@@ -29,7 +33,8 @@ quoteInputElement.addEventListener('input', () => {
         }
     });
     
-    if(correct){
+    if(correct && health > 0){
+        addScore();
         renderNewQuote();
     };
     if(timeOut){
@@ -45,19 +50,22 @@ function getRandomQuote(){
 }
 
 async function renderNewQuote() {
-    const quote = await getRandomQuote();
-    quoteDisplayElement.innerHTML = '';
-    quote['content'].split('').forEach(character => {
-        const characterSpan = document.createElement('span');
-        characterSpan.innerHTML = character;
-        quoteDisplayElement.appendChild(characterSpan);
-    });
-    quoteAuthorElement.innerHTML = '-' + quote['author'];
-    quoteInputElement.value = null;
-    timeLimit = getTimeLimit(quote['content']);
-    timerElement.innerText = timeLimit.toString();
     startTimer(false);
-    timeOut = true;
+    if(health > 0){
+        const quote = await getRandomQuote();
+        quoteDisplayElement.innerHTML = '';
+        quote['content'].split('').forEach(character => {
+            const characterSpan = document.createElement('span');
+            characterSpan.innerHTML = character;
+            quoteDisplayElement.appendChild(characterSpan);
+        });
+        quoteAuthorElement.innerHTML = '-' + quote['author'];
+        quoteInputElement.value = null;
+
+        timeLimit = getTimeLimit(quote['content']);
+        timerElement.innerText = timeLimit.toString();
+        timeOut = true;
+    }
 }
 
 let startTime;
@@ -71,6 +79,8 @@ function startTimer(param = true) {
             timerElement.innerText = timeRemain;
             if(timeRemain < 1){
                 clearInterval(timer);
+                reduceHealth();
+                renderNewQuote();
             }
         }, 1000);
     } else {
@@ -83,8 +93,19 @@ function getTimerTime(){
 }
 
 function getTimeLimit(quoteContent = ''){
+    const SECOND_PER_WORD = 0.4;
     if (quoteContent == null) return 0;
-    return Math.ceil(quoteContent.length * 0.3);
+    return Math.ceil(quoteContent.length * SECOND_PER_WORD);
+}
+
+function reduceHealth(){
+    health--;
+    healthElement.innerHTML = "Health: " + health;
+}
+
+function addScore(){
+    score++;
+    scoreElement.innerHTML = "Score: " + score;
 }
 
 renderNewQuote();
