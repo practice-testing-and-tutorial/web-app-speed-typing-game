@@ -4,6 +4,7 @@ const quoteInputElement = document.getElementById('quoteInput');
 const quoteAuthorElement = document.getElementById('quoteAuthor');
 const timerElement = document.getElementById('timer');
 let timeOut = true;
+let timeLimit = 0;
 
 quoteInputElement.addEventListener('input', () => {
     const arrayQuote = quoteDisplayElement.querySelectorAll('span');
@@ -28,7 +29,9 @@ quoteInputElement.addEventListener('input', () => {
         }
     });
     
-    if(correct) renderNewQuote();
+    if(correct){
+        renderNewQuote();
+    };
     if(timeOut){
         startTimer();
         timeOut = false;
@@ -51,7 +54,8 @@ async function renderNewQuote() {
     });
     quoteAuthorElement.innerHTML = '-' + quote['author'];
     quoteInputElement.value = null;
-    timerElement.innerHTML = '0';
+    timeLimit = getTimeLimit(quote['content']);
+    timerElement.innerText = timeLimit.toString();
     startTimer(false);
     timeOut = true;
 }
@@ -59,11 +63,15 @@ async function renderNewQuote() {
 let startTime;
 let timer;
 function startTimer(param = true) {
-    timerElement.innerText = 0;
+    let timeRemain;
     if(param) {
         startTime = new Date();
         timer = setInterval(() => {
-            timerElement.innerText = getTimerTime();
+            timeRemain = timeLimit - getTimerTime();
+            timerElement.innerText = timeRemain;
+            if(timeRemain < 1){
+                clearInterval(timer);
+            }
         }, 1000);
     } else {
         clearInterval(timer);
@@ -72,6 +80,11 @@ function startTimer(param = true) {
 
 function getTimerTime(){
     return Math.floor((new Date() - startTime) / 1000);
+}
+
+function getTimeLimit(quoteContent = ''){
+    if (quoteContent == null) return 0;
+    return Math.ceil(quoteContent.length * 0.3);
 }
 
 renderNewQuote();
